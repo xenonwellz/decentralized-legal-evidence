@@ -9,7 +9,10 @@
     "deploy:hardhat": "./deploy.sh",
     "build": "pnpm --filter \"*\" build",
     "lint": "pnpm --filter \"*\" lint",
-    "test": "pnpm --filter \"*\" test"
+    "test": "pnpm --filter \"*\" test",
+    "install:all": "pnpm install && pnpm --filter \"*\" install",
+    "start:all": "node cross-platform-deploy.js",
+    "start": "pnpm install:all && pnpm start:all"
   },
   "devDependencies": {
     "typescript": "~5.7.2"

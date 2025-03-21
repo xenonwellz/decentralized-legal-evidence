@@ -2,6 +2,56 @@
 
 LegalChain is a decentralized application for managing legal evidence on the blockchain. It allows legal professionals to store, track, and validate evidence with immutable records.
 
+## Quick Start
+
+### Prerequisites
+
+1. **Install Node.js (version 20.x)**:
+   - Windows: Download and install from [nodejs.org](https://nodejs.org/)
+   - macOS: 
+     ```
+     brew install node@20
+     ```
+   - Linux:
+     ```
+     curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+     sudo apt-get install -y nodejs
+     ```
+
+2. **Install pnpm**:
+   ```
+   npm install -g pnpm
+   ```
+
+3. **Clone the repository**:
+   ```
+   git clone https://github.com/yourusername/sam-final-year.git
+   cd sam-final-year
+   ```
+
+### Starting the Application (One Command)
+
+Simply run:
+```
+pnpm start
+```
+
+This single command will:
+1. Install all dependencies
+2. Clean up previous build artifacts
+3. Start a Hardhat node in the background
+4. Deploy the smart contracts
+5. Copy necessary artifacts to the frontend
+6. Start the frontend application
+
+The application will be available at http://localhost:5174/ in your browser.
+
+### Development Wallet (For Testing Only)
+
+Import this wallet (Private Key) for testing:  
+**DO NOT USE THIS WALLET FOR ANYTHING ELSE EXCEPT DEVELOPMENT**  
+`0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
+
 ## Features
 
 - **Case Management**: Create and manage legal cases
@@ -46,6 +96,10 @@ The project is structured as a monorepo with the following packages:
 
 ## Getting Started
 
+### Traditional Setup (Step-by-Step)
+
+If you prefer to set up and run components individually:
+
 1. Clone the repository
 2. Install dependencies:
    ```
@@ -65,11 +119,17 @@ The project is structured as a monorepo with the following packages:
    ```
 6. Navigate to http://localhost:5174/ in your browser
 
-## How to Use the Application
+### Quick Setup (Recommended)
 
-Import wallet (Private Key):
-DO NOT USE THIS WALLET FOR ANYTHING ELSE EXCEPT DEVELOPMENT
-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+For a faster setup, use our one-command solution:
+
+```
+pnpm start
+```
+
+This automatically installs dependencies, starts the blockchain, deploys contracts, and launches the frontend.
+
+## How to Use the Application
 
 1. **Dashboard**: The main interface displays an overview of your cases and evidence
 2. **Cases Management**: 
@@ -88,27 +148,17 @@ DO NOT USE THIS WALLET FOR ANYTHING ELSE EXCEPT DEVELOPMENT
 
 ## Development
 
-To run the development environment:
+### One-Command Development Environment (Recommended)
+
+The easiest way to set up the complete development environment:
 
 ```bash
-# Install all dependencies
-pnpm install
-
-# Start the local blockchain
-pnpm run dev:hardhat
+# Install Node.js 20.x and pnpm first (see Quick Start section)
+# Then run the all-in-one command
+pnpm start
 ```
 
-Open another terminal session and run
-
-```bash
-# Deploy smart contracts to the local blockchain
-pnpm run deploy:hardhat
-
-# Start the frontend
-pnpm run dev:frontend
-```
-
-Navigate to http://localhost:5174/ to access the application.
+Navigate to http://localhost:5173/ to access the application.
 
 ## License
 
