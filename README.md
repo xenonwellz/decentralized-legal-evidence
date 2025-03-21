@@ -67,6 +67,10 @@ The project is structured as a monorepo with the following packages:
 
 ## How to Use the Application
 
+Import wallet (Private Key):
+DO NOT USE THIS WALLET FOR ANYTHING ELSE EXCEPT DEVELOPMENT
+0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
 1. **Dashboard**: The main interface displays an overview of your cases and evidence
 2. **Cases Management**: 
    - Create new legal cases with relevant details
@@ -92,7 +96,11 @@ pnpm install
 
 # Start the local blockchain
 pnpm run dev:hardhat
+```
 
+Open another terminal session and run
+
+```bash
 # Deploy smart contracts to the local blockchain
 pnpm run deploy:hardhat
 
