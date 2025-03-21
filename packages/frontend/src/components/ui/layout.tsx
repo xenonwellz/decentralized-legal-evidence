@@ -26,9 +26,17 @@ export function Layout({ children }: LayoutProps) {
                         <div className="flex items-center">
                             {/* Logo */}
                             <div className="flex-shrink-0 flex items-center">
-                                <Link to="/">
-                                    <span className="text-2xl font-bold text-blue-800">
-                                        LegalChain
+                                <Link
+                                    to="/"
+                                    className="flex items-center gap-2"
+                                >
+                                    <img
+                                        src="/logo.png"
+                                        alt="LegalChain"
+                                        className="h-8 w-8"
+                                    />
+                                    <span className="text-lg font-bold text-blue-800">
+                                        Legal
                                     </span>
                                 </Link>
                             </div>
