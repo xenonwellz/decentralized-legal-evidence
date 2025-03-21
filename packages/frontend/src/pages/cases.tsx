@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogTrigger } from "../components/ui/dialog";
-import NewCaseForm from "../components/new-case-form";
 import { contractService } from "../services/contract";
 import { Plus, Eye } from "lucide-react";
 
@@ -106,15 +104,12 @@ export default function Cases() {
                         Manage all your legal cases and their evidence
                     </p>
                 </div>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            New Case
-                        </Button>
-                    </DialogTrigger>
-                    <NewCaseForm onSuccess={loadCases} />
-                </Dialog>
+                <Link to="/cases/create">
+                    <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Case
+                    </Button>
+                </Link>
             </div>
 
             {cases.length === 0 ? (
@@ -140,28 +135,25 @@ export default function Cases() {
                         Create your first legal case to start collecting and
                         managing evidence on the blockchain.
                     </p>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button className="bg-blue-600 hover:bg-blue-700">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 mr-2"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M12 4.5v15m7.5-7.5h-15"
-                                    />
-                                </svg>
-                                Create First Case
-                            </Button>
-                        </DialogTrigger>
-                        <NewCaseForm onSuccess={loadCases} />
-                    </Dialog>
+                    <Link to="/cases/create">
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 mr-2"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 4.5v15m7.5-7.5h-15"
+                                />
+                            </svg>
+                            Create First Case
+                        </Button>
+                    </Link>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">

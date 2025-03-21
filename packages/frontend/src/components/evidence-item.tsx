@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { getIpfsUrl } from "../services/ipfs";
-import { ExternalLink, Briefcase } from "lucide-react";
+import { ExternalLink, Briefcase, Eye } from "lucide-react";
 
 export interface EvidenceItemProps {
     id: number;
@@ -98,6 +98,14 @@ export function EvidenceItem({
 
                 <div className="flex justify-between items-center">
                     <div className="flex space-x-4">
+                        <Link
+                            to={`/evidence/view/${caseId}/${id}`}
+                            className="text-blue-600 hover:text-blue-800 flex items-center text-sm font-medium"
+                        >
+                            <Eye className="h-5 w-5 mr-1" />
+                            View Details
+                        </Link>
+
                         <a
                             href={getIpfsUrl(metadataCID)}
                             target="_blank"

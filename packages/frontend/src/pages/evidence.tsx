@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogTrigger } from "../components/ui/dialog";
-import NewEvidenceForm from "../components/new-evidence";
 import { contractService, Evidence, Case } from "../services/contract";
 import {
     Tabs,
@@ -229,8 +227,8 @@ function PageHeader({
     subtitle,
     showAddButton,
     activeCase,
-    onSuccess,
-}: PageHeaderProps) {
+}: // onSuccess,
+PageHeaderProps) {
     return (
         <div className="flex justify-between items-center mb-6">
             <div>
@@ -239,20 +237,20 @@ function PageHeader({
             </div>
 
             {showAddButton && (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <Plus className="h-5 w-5 mr-2" />
-                            Add Evidence
-                        </Button>
-                    </DialogTrigger>
-                    {activeCase !== null && (
-                        <NewEvidenceForm
-                            caseId={activeCase}
-                            onSuccess={onSuccess}
-                        />
-                    )}
-                </Dialog>
+                <Link
+                    to={
+                        activeCase !== null
+                            ? `/evidence/create/${activeCase}`
+                            : "/cases"
+                    }
+                >
+                    <Button>
+                        <Plus className="h-5 w-5 mr-2" />
+                        {activeCase !== null
+                            ? "Add Evidence to this Case"
+                            : "View all cases"}
+                    </Button>
+                </Link>
             )}
         </div>
     );
@@ -265,7 +263,7 @@ interface EmptyStateProps {
     onSuccess: () => void;
 }
 
-function EmptyState({ activeCase, casesExist, onSuccess }: EmptyStateProps) {
+function EmptyState({ activeCase, casesExist }: EmptyStateProps) {
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-8 text-center">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -279,22 +277,20 @@ function EmptyState({ activeCase, casesExist, onSuccess }: EmptyStateProps) {
             </p>
 
             {casesExist ? (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button className="bg-purple-600 hover:bg-purple-700">
-                            <Plus className="h-5 w-5 mr-2" />
-                            {activeCase !== null
-                                ? "Add Evidence to this Case"
-                                : "Add First Evidence"}
-                        </Button>
-                    </DialogTrigger>
-                    {activeCase !== null && (
-                        <NewEvidenceForm
-                            caseId={activeCase}
-                            onSuccess={onSuccess}
-                        />
-                    )}
-                </Dialog>
+                <Link
+                    to={
+                        activeCase !== null
+                            ? `/evidence/create/${activeCase}`
+                            : "/cases"
+                    }
+                >
+                    <Button className="bg-purple-600 hover:bg-purple-700">
+                        <Plus className="h-5 w-5 mr-2" />
+                        {activeCase !== null
+                            ? "Add Evidence to this Case"
+                            : "Add First Evidence"}
+                    </Button>
+                </Link>
             ) : (
                 <Link
                     to="/cases"

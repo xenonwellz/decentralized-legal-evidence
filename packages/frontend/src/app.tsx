@@ -4,6 +4,9 @@ import Dashboard from "./pages/dashboard";
 import Cases from "./pages/cases";
 import EvidencePage from "./pages/evidence";
 import CaseDetailPage from "./pages/case-detail";
+import CreateCasePage from "./pages/create-case";
+import CreateEvidencePage from "./pages/create-evidence";
+import ViewEvidencePage from "./pages/view-evidence";
 
 function App() {
     return (
@@ -26,10 +29,34 @@ function App() {
                     }
                 />
                 <Route
+                    path="/cases/create"
+                    element={
+                        <Layout>
+                            <CreateCasePage />
+                        </Layout>
+                    }
+                />
+                <Route
                     path="/evidence"
                     element={
                         <Layout>
                             <EvidencePage />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/evidence/create/:caseId"
+                    element={
+                        <Layout>
+                            <CreateEvidencePage />
+                        </Layout>
+                    }
+                />
+                <Route
+                    path="/evidence/view/:caseId/:evidenceId"
+                    element={
+                        <Layout>
+                            <ViewEvidencePage />
                         </Layout>
                     }
                 />
