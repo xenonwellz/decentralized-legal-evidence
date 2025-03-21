@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogTrigger } from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
-import NewEvidenceForm from "../components/new-evidence-form";
 import { contractService, Case, Evidence } from "../services/contract";
-import { FileText } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import EvidenceList from "../components/evidence-list";
+
 // Extended Case type that includes evidence count and other metadata
 interface ExtendedCase extends Case {
     evidenceCount: number;
@@ -106,8 +105,8 @@ export default function CaseDetailPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Case Header */}
-            <div className="flex justify-between items-start pb-6 mb-6 border-b border-gray-300">
-                <div>
+            <div className="flex flex-col md:flex-row justify-between items-start pb-6 mb-6 border-b border-gray-300">
+                <div className="mb-4 md:mb-0">
                     <div className="flex items-center gap-2 mb-2">
                         <Link
                             to="/cases"
@@ -116,7 +115,7 @@ export default function CaseDetailPage() {
                             ← Back to Cases
                         </Link>
                     </div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
                         {caseData.name || `Unnamed Case #${caseData.id}`}
                         <Badge variant="outline">Case #{caseData.id}</Badge>
                     </h1>
@@ -124,7 +123,7 @@ export default function CaseDetailPage() {
                         Created on {formatDate(Number(caseData.timestamp))}
                     </p>
                 </div>
-                <div className="flex space-x-3">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3">
                     <Link
                         to={`/evidence?caseId=${caseData.id}`}
                         className="inline-flex items-center px-4 py-2 border border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -132,15 +131,12 @@ export default function CaseDetailPage() {
                         <FileText className="h-4 w-4 mr-2" />
                         View in Evidence Manager
                     </Link>
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button>Add Evidence</Button>
-                        </DialogTrigger>
-                        <NewEvidenceForm
-                            caseId={parsedCaseId as number}
-                            onSuccess={loadCaseData}
-                        />
-                    </Dialog>
+                    <Link to={`/evidence/create/${caseData.id}`}>
+                        <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Evidence
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
@@ -205,15 +201,12 @@ export default function CaseDetailPage() {
                                 </p>
                             </div>
                         </div>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button>Add First Evidence</Button>
-                            </DialogTrigger>
-                            <NewEvidenceForm
-                                caseId={parsedCaseId as number}
-                                onSuccess={loadCaseData}
-                            />
-                        </Dialog>
+                        <Link to={`/evidence/create/${parsedCaseId}`}>
+                            <Button>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add First Evidence
+                            </Button>
+                        </Link>
                     </div>
                 ) : (
                     <EvidenceList caseId={parsedCaseId as number} />

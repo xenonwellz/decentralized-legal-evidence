@@ -95,7 +95,7 @@ export default function Cases() {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
                 <div>
                     <h1 className="text-xl font-bold text-gray-800">
                         Legal Cases
@@ -104,7 +104,7 @@ export default function Cases() {
                         Manage all your legal cases and their evidence
                     </p>
                 </div>
-                <Link to="/cases/create">
+                <Link to="/cases/create" className="mt-4 md:mt-0">
                     <Button>
                         <Plus className="h-4 w-4 mr-2" />
                         New Case
@@ -209,6 +209,19 @@ export default function Cases() {
                                         >
                                             <Eye className="h-4 w-4 mr-1" />
                                             View Details
+                                        </Button>
+                                    </Link>
+
+                                    <Link
+                                        to={`/evidence/create/${caseItem.id}`}
+                                        className="text-gray-600 hover:text-gray-900 flex items-center text-sm font-medium"
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            className="border-gray-300 cursor-pointer"
+                                        >
+                                            <Plus className="h-4 w-4 mr-1" />
+                                            Add Evidence
                                         </Button>
                                     </Link>
                                 </div>

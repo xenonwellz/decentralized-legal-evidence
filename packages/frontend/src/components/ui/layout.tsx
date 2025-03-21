@@ -17,10 +17,10 @@ export function Layout({ children }: LayoutProps) {
     }, []);
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
             {/* Top navigation bar */}
-            <div className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white border-b border-gray-300 h-20 flex flex-col justify-center sticky top-0 z-10">
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         {/* Left side with logo and mobile menu button */}
                         <div className="flex items-center">
@@ -54,34 +54,36 @@ export function Layout({ children }: LayoutProps) {
                 </div>
             </div>
 
-            {/* Main content */}
-            <main>
-                <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                    {children}
-                </div>
-            </main>
+            <div className="flex-1 flex flex-col">
+                {/* Main content */}
+                <main className="flex-1">
+                    <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                        {children}
+                    </div>
+                </main>
 
-            {/* Footer */}
-            <footer className="bg-white border-t border-gray-300">
-                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="mb-4 md:mb-0">
-                            <p className="text-gray-400 text-sm">
-                                Blockchain-powered evidence management
-                            </p>
-                        </div>
-                        <div className="text-gray-400 text-sm text-center md:text-right">
-                            <p>
-                                Contract address:{" "}
-                                {import.meta.env.VITE_CONTRACT_ADDRESS}
-                            </p>
-                            <p className="mt-1">
-                                © 2023 LegalChain. All rights reserved.
-                            </p>
+                {/* Footer */}
+                <footer className="bg-white border-t border-gray-300">
+                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <div className="flex flex-col md:flex-row justify-between items-center">
+                            <div className="mb-4 md:mb-0">
+                                <p className="text-gray-400 text-sm">
+                                    Blockchain-powered evidence management
+                                </p>
+                            </div>
+                            <div className="text-gray-400 text-sm text-center md:text-right">
+                                <p>
+                                    Contract address:{" "}
+                                    {import.meta.env.VITE_CONTRACT_ADDRESS}
+                                </p>
+                                <p className="mt-1">
+                                    © 2023 LegalChain. All rights reserved.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
         </div>
     );
 }

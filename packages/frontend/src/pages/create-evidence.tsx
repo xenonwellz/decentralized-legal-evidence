@@ -2,27 +2,16 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { contractService } from "../services/contract";
-
-// Mock CID generator (in a real app, this would be done through web3.storage or similar)
-const generateMockCID = () => {
-    const characters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const length = 46; // Typical CID v1 length
-    let result = "Qm"; // Typical prefix for CIDv0
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(
-            Math.floor(Math.random() * characters.length)
-        );
-    }
-    return result;
-};
+import { uploadToIPFS, uploadMetadataToIPFS } from "../services/ipfs";
 
 export default function CreateEvidencePage() {
     const { caseId } = useParams();
     const [description, setDescription] = useState("");
     const [fileSelected, setFileSelected] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [uploadingStatus, setUploadingStatus] = useState<string | null>(null);
     const navigate = useNavigate();
 
     if (!caseId || isNaN(Number(caseId))) {
@@ -46,11 +35,45 @@ export default function CreateEvidencePage() {
         );
     }
 
+    const uploadFile = async (): Promise<string | null> => {
+        if (!file) {
+            return null;
+        }
+
+        try {
+            setUploadingStatus("Uploading file to IPFS...");
+            const fileCid = await uploadToIPFS(file);
+
+            // Create metadata object with details about the evidence
+            const metadata = {
+                name: description.slice(0, 100), // Short name based on description
+                description: description,
+                image: `ipfs://${fileCid}`,
+                properties: {
+                    type: file.type,
+                    size: file.size,
+                    lastModified: file.lastModified,
+                    dateAdded: new Date().toISOString(),
+                    caseId: Number(caseId),
+                },
+            };
+
+            setUploadingStatus("Uploading metadata to IPFS...");
+            const metadataCid = await uploadMetadataToIPFS(metadata);
+            return metadataCid;
+        } catch (error) {
+            console.error("Error uploading to IPFS:", error);
+            throw new Error("Failed to upload evidence to IPFS");
+        } finally {
+            setUploadingStatus(null);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Form validation
-        if (!description.trim() || !fileSelected) {
+        if (!description.trim() || !file) {
             setError("Please fill in all fields and upload a file");
             return;
         }
@@ -59,14 +82,18 @@ export default function CreateEvidencePage() {
             setSubmitting(true);
             setError(null);
 
-            // Generate a mock CID (in a real app, this would be the CID from IPFS upload)
-            const mockCID = generateMockCID();
+            // Upload the file to IPFS and get the real CID
+            const cidToUse = await uploadFile();
+
+            if (!cidToUse) {
+                throw new Error("Failed to get CID from IPFS upload");
+            }
 
             // Submit the evidence to the blockchain
             await contractService.addEvidence(
                 Number(caseId),
                 description,
-                mockCID
+                cidToUse
             );
 
             // Navigate to evidence page with the case ID after success
@@ -79,8 +106,11 @@ export default function CreateEvidencePage() {
         }
     };
 
-    const handleFileChange = () => {
-        setFileSelected(true);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFile(e.target.files[0]);
+            setFileSelected(true);
+        }
     };
 
     return (
@@ -110,6 +140,34 @@ export default function CreateEvidencePage() {
                             role="alert"
                         >
                             <span className="block sm:inline">{error}</span>
+                        </div>
+                    )}
+
+                    {uploadingStatus && (
+                        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
+                            <div className="flex items-center">
+                                <svg
+                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-700"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                </svg>
+                                {uploadingStatus}
+                            </div>
                         </div>
                     )}
 
@@ -178,10 +236,18 @@ export default function CreateEvidencePage() {
                     <div className="flex mt-6">
                         <Button
                             type="submit"
-                            disabled={submitting}
-                            className="w-full"
+                            disabled={submitting || !!uploadingStatus}
+                            className={`w-full ${
+                                submitting || !!uploadingStatus
+                                    ? "opacity-70"
+                                    : ""
+                            }`}
                         >
-                            {submitting ? "Submitting..." : "Submit Evidence"}
+                            {uploadingStatus
+                                ? uploadingStatus
+                                : submitting
+                                ? "Submitting..."
+                                : "Submit Evidence"}
                         </Button>
                     </div>
                 </form>

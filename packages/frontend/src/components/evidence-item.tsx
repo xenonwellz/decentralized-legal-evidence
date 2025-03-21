@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { getIpfsUrl } from "../services/ipfs";
-import { ExternalLink, Briefcase, Eye } from "lucide-react";
+import { Briefcase, Eye } from "lucide-react";
 
 export interface EvidenceItemProps {
     id: number;
@@ -40,16 +40,16 @@ export function EvidenceItem({
     return (
         <div className="bg-white border border-gray-300">
             <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 className="text-xl font-semibold text-gray-800">
+                <div className="flex flex-col md:flex-row justify-between items-start mb-4">
+                    <div className="mb-2 md:mb-0">
+                        <h2 className="text-lg md:text-xl font-semibold text-gray-800">
                             {description}
                         </h2>
                         <p className="text-gray-500 text-sm">
                             Submitted on {formatDate(timestamp)}
                         </p>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex  items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                         {showCaseLink && caseTitle && (
                             <Link
                                 to={`/cases/${caseId}`}
@@ -71,7 +71,7 @@ export function EvidenceItem({
                 </div>
 
                 <div className="bg-gray-50 border border-gray-300 p-4 mb-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden">
                         <div>
                             <h3 className="text-sm font-medium text-gray-500 mb-1">
                                 Submitter
@@ -80,7 +80,7 @@ export function EvidenceItem({
                                 {submitter}
                             </p>
                         </div>
-                        <div>
+                        <div className="w-full">
                             <h3 className="text-sm font-medium text-gray-500 mb-1">
                                 Metadata CID
                             </h3>
@@ -88,7 +88,7 @@ export function EvidenceItem({
                                 href={getIpfsUrl(metadataCID)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline font-mono text-sm"
+                                className="text-blue-600 hover:underline font-mono text-sm w-full"
                             >
                                 {metadataCID}
                             </a>
@@ -96,7 +96,7 @@ export function EvidenceItem({
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
                     <div className="flex space-x-4">
                         <Link
                             to={`/evidence/view/${caseId}/${id}`}
@@ -106,15 +106,6 @@ export function EvidenceItem({
                             View Details
                         </Link>
 
-                        <a
-                            href={getIpfsUrl(metadataCID)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 flex items-center text-sm font-medium"
-                        >
-                            <ExternalLink className="h-5 w-5 mr-1" />
-                            View Evidence
-                        </a>
                         {showCaseLink && (
                             <Link
                                 to={`/cases/${caseId}`}
@@ -126,21 +117,23 @@ export function EvidenceItem({
                         )}
                     </div>
 
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            onSetAdmissibility(caseId, id, !isAdmissible)
-                        }
-                        className={
-                            isAdmissible
-                                ? "text-red-600 hover:text-red-800 hover:bg-red-50"
-                                : "text-green-600 hover:text-green-800 hover:bg-green-50"
-                        }
-                    >
-                        {isAdmissible
-                            ? "Mark as Inadmissible"
-                            : "Mark as Admissible"}
-                    </Button>
+                    <div>
+                        <Button
+                            variant="outline"
+                            onClick={() =>
+                                onSetAdmissibility(caseId, id, !isAdmissible)
+                            }
+                            className={
+                                isAdmissible
+                                    ? "text-red-600 hover:text-red-800 hover:bg-red-50"
+                                    : "text-green-600 hover:text-green-800 hover:bg-green-50"
+                            }
+                        >
+                            {isAdmissible
+                                ? "Mark as Inadmissible"
+                                : "Mark as Admissible"}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

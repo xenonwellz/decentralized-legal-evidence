@@ -230,7 +230,7 @@ function PageHeader({
 }: // onSuccess,
 PageHeaderProps) {
     return (
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
                 <h1 className="text-xl font-bold text-gray-800">{title}</h1>
                 <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>
@@ -243,6 +243,7 @@ PageHeaderProps) {
                             ? `/evidence/create/${activeCase}`
                             : "/cases"
                     }
+                    className="mt-4 md:mt-0"
                 >
                     <Button>
                         <Plus className="h-5 w-5 mr-2" />
