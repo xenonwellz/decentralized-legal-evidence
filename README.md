@@ -51,24 +51,56 @@ The project is structured as a monorepo with the following packages:
    ```
    pnpm install
    ```
-3. Start the development server:
+3. Start the Hardhat development environment:
    ```
-   pnpm dev
+   pnpm run dev:hardhat
    ```
+4. Deploy the smart contracts:
+   ```
+   pnpm run deploy:hardhat
+   ```
+5. Start the frontend application:
+   ```
+   pnpm run dev:frontend
+   ```
+6. Navigate to http://localhost:5174/ in your browser
+
+## How to Use the Application
+
+1. **Dashboard**: The main interface displays an overview of your cases and evidence
+2. **Cases Management**: 
+   - Create new legal cases with relevant details
+   - View and manage existing cases
+   - Track case status and updates
+3. **Evidence Management**:
+   - Upload evidence files which will be stored on IPFS
+   - Link evidence to specific cases
+   - Mark evidence as admissible or keep them pending review
+   - View chain of custody and verification information
+4. **Blockchain Verification**:
+   - All actions are recorded on the blockchain
+   - Evidence files receive a unique hash for verification
+   - Changes to evidence status are timestamped and immutable
 
 ## Development
 
 To run the development environment:
 
 ```bash
-# Start the frontend
-cd packages/frontend
-pnpm dev
+# Install all dependencies
+pnpm install
 
-# In another terminal, start the local blockchain
-cd packages/hardhat
-pnpm node
+# Start the local blockchain
+pnpm run dev:hardhat
+
+# Deploy smart contracts to the local blockchain
+pnpm run deploy:hardhat
+
+# Start the frontend
+pnpm run dev:frontend
 ```
+
+Navigate to http://localhost:5174/ to access the application.
 
 ## License
 
