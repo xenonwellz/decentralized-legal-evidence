@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { contractService } from "../../services/contract";
-import { Wallet } from "lucide-react";
+import { Wallet, AlertTriangle } from "lucide-react";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -9,12 +9,60 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
     const [accountAddress, setAccountAddress] = useState<string>("");
+    const [isWrongChain, setIsWrongChain] = useState<boolean>(false);
+    const [isConnecting, setIsConnecting] = useState<boolean>(false);
 
+    // Check chain and wallet on load
     useEffect(() => {
-        // Get the connected account address
-        const address = contractService.getAccount();
-        setAccountAddress(address);
+        const checkConnection = async () => {
+            const address = contractService.getAccount();
+            setAccountAddress(address || "");
+
+            // If connected, check if on the right chain
+            if (address) {
+                try {
+                    const isCorrectChain =
+                        await contractService.ensureCorrectChain();
+                    setIsWrongChain(!isCorrectChain);
+                } catch (error) {
+                    console.error("Chain check failed:", error);
+                    setIsWrongChain(true);
+                }
+            }
+        };
+
+        checkConnection();
     }, []);
+
+    // Handle wallet connection
+    const handleConnectWallet = async () => {
+        setIsConnecting(true);
+        try {
+            const address = await contractService.connectWallet();
+            setAccountAddress(address || "");
+
+            // Check if on correct chain after connection
+            if (address) {
+                const isCorrectChain =
+                    await contractService.ensureCorrectChain();
+                setIsWrongChain(!isCorrectChain);
+            }
+        } catch (error) {
+            console.error("Failed to connect wallet:", error);
+        } finally {
+            setIsConnecting(false);
+        }
+    };
+
+    // Handle chain switching
+    const handleSwitchChain = async () => {
+        try {
+            const isCorrectChain = await contractService.ensureCorrectChain();
+            setIsWrongChain(!isCorrectChain);
+        } catch (error) {
+            console.error("Failed to switch chain:", error);
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -43,20 +91,41 @@ export function Layout({ children }: LayoutProps) {
                         </div>
 
                         {/* Right side with wallet connection */}
-                        <div className="flex items-center">
-                            <div className="flex items-center px-3 py-1.5 text-gray-700 border border-gray-300 rounded">
-                                <Wallet className="w-4 h-4 mr-2" />
-                                {accountAddress ? (
+                        <div className="flex items-center gap-2">
+                            {isWrongChain && accountAddress && (
+                                <button
+                                    onClick={handleSwitchChain}
+                                    className="flex items-center px-3 py-1.5 text-white bg-red-500 rounded hover:bg-red-600 transition-colors"
+                                >
+                                    <AlertTriangle className="w-4 h-4 mr-2" />
+                                    <span className="text-sm font-medium">
+                                        Switch Network
+                                    </span>
+                                </button>
+                            )}
+
+                            {accountAddress ? (
+                                <div className="flex items-center px-3 py-1.5 text-gray-700 border border-gray-300 rounded">
+                                    <Wallet className="w-4 h-4 mr-2" />
                                     <span className="text-sm font-medium">
                                         {accountAddress.substring(0, 6)}...
                                         {accountAddress.substring(38)}
                                     </span>
-                                ) : (
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleConnectWallet}
+                                    disabled={isConnecting}
+                                    className="flex items-center px-3 py-1.5 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                >
+                                    <Wallet className="w-4 h-4 mr-2" />
                                     <span className="text-sm font-medium">
-                                        Not Connected
+                                        {isConnecting
+                                            ? "Connecting..."
+                                            : "Connect Wallet"}
                                     </span>
-                                )}
-                            </div>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,10 @@
-import { createPublicClient, createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import {
+    createPublicClient,
+    createWalletClient,
+    http,
+    custom,
+    Chain,
+} from "viem";
 import { hardhat } from "viem/chains";
 import LegalEvidenceArtifact from "@/artifacts/contracts/LegalEvidence.sol/LegalEvidence.json";
 
@@ -7,26 +12,21 @@ const abi = LegalEvidenceArtifact.abi;
 
 // Contract and network configuration
 const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
-console.log(contractAddress);
-const privateKey =
-    import.meta.env.PRIVATE_KEY ??
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 const rpcUrl = import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:8545";
 
-// Account setup
-const account = privateKeyToAccount(privateKey as `0x${string}`);
+// Define deployment chain - use hardhat as default
+const deploymentChain: Chain = hardhat;
 
 // Client setup
 export const publicClient = createPublicClient({
-    chain: hardhat,
+    chain: deploymentChain,
     transport: http(rpcUrl),
 });
 
-export const walletClient = createWalletClient({
-    account,
-    chain: hardhat,
-    transport: http(rpcUrl),
-});
+// Use a wallet connection instead of a private key
+// This will be initialized when connectWallet is called
+let walletClient: ReturnType<typeof createWalletClient> | null = null;
+let connectedAccount: string | null = null;
 
 // Type definitions
 export interface Case {
@@ -52,8 +52,107 @@ export interface Evidence {
 
 // Contract service functions
 export const contractService = {
+    // Check if wallet is connected
+    isWalletConnected: () => !!connectedAccount,
+
+    // Check if on the right chain and switch if needed
+    ensureCorrectChain: async (): Promise<boolean> => {
+        if (!walletClient) {
+            throw new Error("Wallet not connected");
+        }
+
+        try {
+            // Get the current chain ID from the wallet using window.ethereum
+            const currentChainIdHex = await window.ethereum?.request({
+                method: "eth_chainId",
+            });
+            const currentChainId = currentChainIdHex
+                ? parseInt(currentChainIdHex as string, 16)
+                : 0;
+
+            // Check if it matches the deployment chain
+            if (currentChainId !== deploymentChain.id) {
+                try {
+                    // Try to switch to the correct chain
+                    await window.ethereum?.request({
+                        method: "wallet_switchEthereumChain",
+                        params: [
+                            { chainId: `0x${deploymentChain.id.toString(16)}` },
+                        ],
+                    });
+                    return true;
+                } catch (error: unknown) {
+                    // If the chain doesn't exist in the wallet, try to add it
+                    const switchError = error as { code?: number };
+                    if (switchError.code === 4902) {
+                        await window.ethereum?.request({
+                            method: "wallet_addEthereumChain",
+                            params: [
+                                {
+                                    chainId: `0x${deploymentChain.id.toString(
+                                        16
+                                    )}`,
+                                    chainName: deploymentChain.name,
+                                    nativeCurrency:
+                                        deploymentChain.nativeCurrency,
+                                    rpcUrls: [rpcUrl],
+                                },
+                            ],
+                        });
+                        // Try switching again
+                        await window.ethereum?.request({
+                            method: "wallet_switchEthereumChain",
+                            params: [
+                                {
+                                    chainId: `0x${deploymentChain.id.toString(
+                                        16
+                                    )}`,
+                                },
+                            ],
+                        });
+                        return true;
+                    }
+                    throw error;
+                }
+            }
+            return true;
+        } catch (error) {
+            console.error("Failed to ensure correct chain:", error);
+            return false;
+        }
+    },
+
+    // Connect to wallet
+    connectWallet: async (): Promise<string | null> => {
+        try {
+            // Check if window.ethereum exists
+            if (!window?.ethereum) {
+                alert("Please install MetaMask or another Ethereum wallet");
+                return null;
+            }
+
+            // Create a wallet client with the browser provider
+            walletClient = createWalletClient({
+                chain: deploymentChain,
+                transport: custom(window.ethereum),
+            });
+
+            // Request accounts
+            const [address] = await walletClient.requestAddresses();
+            connectedAccount = address;
+
+            // Ensure correct chain
+            await contractService.ensureCorrectChain();
+
+            return address;
+        } catch (error) {
+            console.error("Failed to connect wallet:", error);
+            return null;
+        }
+    },
+
     // Get the current account address
-    getAccount: () => account.address,
+    getAccount: () => connectedAccount,
 
     // Get total number of cases
     getCaseCount: async (): Promise<number> => {
@@ -87,7 +186,7 @@ export const contractService = {
             args: [BigInt(caseId)],
         });
 
-        const result = res as Case;
+        const result = res as unknown as Case;
 
         return {
             id: caseId,
@@ -103,11 +202,23 @@ export const contractService = {
 
     // Create a new case
     createCase: async (title: string, description: string): Promise<string> => {
+        if (!walletClient || !connectedAccount) {
+            throw new Error("Wallet not connected");
+        }
+
+        // Ensure correct chain
+        const correctChain = await contractService.ensureCorrectChain();
+        if (!correctChain) {
+            throw new Error("Failed to switch to the correct chain");
+        }
+
         const hash = await walletClient.writeContract({
             address: contractAddress,
             abi,
+            chain: deploymentChain,
             functionName: "createCase",
             args: [title, description],
+            account: connectedAccount,
         });
 
         await publicClient.waitForTransactionReceipt({ hash });
@@ -119,11 +230,20 @@ export const contractService = {
         caseId: number,
         isActive: boolean
     ): Promise<string> => {
+        if (!walletClient || !connectedAccount) {
+            throw new Error("Wallet not connected");
+        }
+
+        // Ensure correct chain
+        await contractService.ensureCorrectChain();
+
         const hash = await walletClient.writeContract({
             address: contractAddress,
             abi,
+            chain: deploymentChain,
             functionName: "setCaseStatus",
             args: [BigInt(caseId), isActive],
+            account: connectedAccount,
         });
 
         await publicClient.waitForTransactionReceipt({ hash });
@@ -167,7 +287,7 @@ export const contractService = {
             args: [BigInt(caseId), BigInt(evidenceId)],
         });
 
-        const result = res as Evidence;
+        const result = res as unknown as Evidence;
 
         return {
             id: evidenceId,
@@ -177,8 +297,6 @@ export const contractService = {
             timestamp: Number(result.timestamp),
             isAdmissible: result.isAdmissible,
         };
-
-        throw new Error("Invalid evidence data returned from contract");
     },
 
     // Add new evidence
@@ -187,11 +305,20 @@ export const contractService = {
         description: string,
         metadataCID: string
     ): Promise<string> => {
+        if (!walletClient || !connectedAccount) {
+            throw new Error("Wallet not connected");
+        }
+
+        // Ensure correct chain
+        await contractService.ensureCorrectChain();
+
         const hash = await walletClient.writeContract({
             address: contractAddress,
             abi,
+            chain: deploymentChain,
             functionName: "submitEvidence",
             args: [BigInt(caseId), metadataCID, description],
+            account: connectedAccount,
         });
 
         await publicClient.waitForTransactionReceipt({ hash });
@@ -204,11 +331,20 @@ export const contractService = {
         evidenceId: number,
         isAdmissible: boolean
     ): Promise<string> => {
+        if (!walletClient || !connectedAccount) {
+            throw new Error("Wallet not connected");
+        }
+
+        // Ensure correct chain
+        await contractService.ensureCorrectChain();
+
         const hash = await walletClient.writeContract({
             address: contractAddress,
             abi,
+            chain: deploymentChain,
             functionName: "setEvidenceAdmissibility",
             args: [BigInt(caseId), BigInt(evidenceId), isAdmissible],
+            account: connectedAccount,
         });
 
         await publicClient.waitForTransactionReceipt({ hash });
