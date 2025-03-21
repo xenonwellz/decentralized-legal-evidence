@@ -1,0 +1,24 @@
+{
+  "name": "legal-chain-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Legal Chain Monorepo",
+  "scripts": {
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:hardhat": "pnpm --filter hardhat dev",
+    "deploy:hardhat": "cd packages/hardhat && pnpm run deploy && cd ../..",
+    "build": "pnpm --filter \"*\" build",
+    "lint": "pnpm --filter \"*\" lint",
+    "test": "pnpm --filter \"*\" test"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "thirdweb": "^5.92.3"
+  }
+}

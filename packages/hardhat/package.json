@@ -1,0 +1,27 @@
+{
+  "name": "hardhat",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "hardhat node",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.ts && cp -r artifacts ../frontend/src/artifacts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-ignition": "^0.15.10",
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "hardhat": "^2.22.19",
+    "viem": "^2.23.13"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "keccak",
+      "secp256k1"
+    ],
+    "onlyBuiltDependencies": [
+      "keccak"
+    ]
+  }
+}
