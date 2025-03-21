@@ -266,7 +266,7 @@ interface EmptyStateProps {
 
 function EmptyState({ activeCase, casesExist }: EmptyStateProps) {
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-8 text-center">
+        <div className="bg-white border border-gray-300 p-8 text-center">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-700 mb-2">
                 No evidence found
@@ -285,19 +285,19 @@ function EmptyState({ activeCase, casesExist }: EmptyStateProps) {
                             : "/cases"
                     }
                 >
-                    <Button className="bg-purple-600 hover:bg-purple-700">
-                        <Plus className="h-5 w-5 mr-2" />
+                    <Button>
+                        <Plus className="h-4 w-4 mr-2" />
                         {activeCase !== null
                             ? "Add Evidence to this Case"
                             : "Add First Evidence"}
                     </Button>
                 </Link>
             ) : (
-                <Link
-                    to="/cases"
-                    className="inline-block px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
-                >
-                    Create a Case First
+                <Link to="/cases">
+                    <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create First Case
+                    </Button>
                 </Link>
             )}
         </div>

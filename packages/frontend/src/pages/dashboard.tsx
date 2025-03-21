@@ -7,6 +7,7 @@ import {
     Clock,
     CheckCircle,
     SquareArrowOutUpRight,
+    Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -270,20 +271,20 @@ export default function Dashboard() {
                             ))}
                         </div>
                     ) : (
-                        <div className="p-10 border flex justify-between">
-                            <div className="flex items-center gap-4">
-                                <FileText className="h-10 w-10 text-gray-400" />
-                                <div>
-                                    <h3 className="text-xl font-semibold text-black">
-                                        No cases available
-                                    </h3>
-                                    <p className="text-muted-foreground">
-                                        Start by creating your first case
-                                    </p>
-                                </div>
-                            </div>
-                            <Link to="/cases">
-                                <Button>Create Case</Button>
+                        <div className="bg-white border border-gray-300 p-8 text-center">
+                            <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-xl font-medium text-gray-700 mb-2">
+                                No cases found
+                            </h3>
+                            <p className="text-gray-500 max-w-md mx-auto mb-6">
+                                Create your first legal case to start collecting
+                                and managing evidence on the blockchain.
+                            </p>
+                            <Link to="/cases/create">
+                                <Button>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Create First Case
+                                </Button>
                             </Link>
                         </div>
                     )}

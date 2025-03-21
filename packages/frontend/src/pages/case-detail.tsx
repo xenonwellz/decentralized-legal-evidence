@@ -188,19 +188,15 @@ export default function CaseDetailPage() {
                 </h2>
 
                 {evidence.length === 0 ? (
-                    <div className="border border-gray-300 p-8 flex justify-between">
-                        <div className="flex items-center gap-4">
-                            <FileText className="h-16 w-16 text-gray-300 mb-4" />
-                            <div>
-                                <h3 className="text-xl font-medium text-gray-700 mb-2">
-                                    No evidence found
-                                </h3>
-                                <p className="text-gray-500 max-w-md mb-6">
-                                    This case doesn't have any evidence yet. Add
-                                    your first evidence item to this case.
-                                </p>
-                            </div>
-                        </div>
+                    <div className="bg-white border border-gray-300 p-8 text-center">
+                        <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-xl font-medium text-gray-700 mb-2">
+                            No evidence found
+                        </h3>
+                        <p className="text-gray-500 max-w-md mx-auto mb-6">
+                            This case doesn't have any evidence yet. Add your
+                            first evidence item to this case.
+                        </p>
                         <Link to={`/evidence/create/${parsedCaseId}`}>
                             <Button>
                                 <Plus className="h-4 w-4 mr-2" />

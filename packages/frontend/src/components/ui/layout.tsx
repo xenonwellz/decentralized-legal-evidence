@@ -15,19 +15,27 @@ export function Layout({ children }: LayoutProps) {
     // Check chain and wallet on load
     useEffect(() => {
         const checkConnection = async () => {
-            const address = contractService.getAccount();
-            setAccountAddress(address || "");
+            try {
+                // Try to auto-connect wallet first
+                const address = await contractService.connectWallet();
+                setAccountAddress(address || "");
 
-            // If connected, check if on the right chain
-            if (address) {
-                try {
-                    const isCorrectChain =
-                        await contractService.ensureCorrectChain();
-                    setIsWrongChain(!isCorrectChain);
-                } catch (error) {
-                    console.error("Chain check failed:", error);
-                    setIsWrongChain(true);
+                // If connected, check if on the right chain
+                if (address) {
+                    try {
+                        const isCorrectChain =
+                            await contractService.ensureCorrectChain();
+                        setIsWrongChain(!isCorrectChain);
+                    } catch (error) {
+                        console.error("Chain check failed:", error);
+                        setIsWrongChain(true);
+                    }
                 }
+            } catch (error) {
+                // Fall back to just checking if already connected
+                console.error("Auto wallet connection failed:", error);
+                const address = contractService.getAccount();
+                setAccountAddress(address || "");
             }
         };
 
