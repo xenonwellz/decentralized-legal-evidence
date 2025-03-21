@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { contractService } from "../../services/contract";
+import { contractService, contractAddress } from "../../services/contract";
 import { Wallet, AlertTriangle } from "lucide-react";
 
 interface LayoutProps {
@@ -149,10 +149,7 @@ export function Layout({ children }: LayoutProps) {
                                 </p>
                             </div>
                             <div className="text-gray-400 text-sm text-center md:text-right">
-                                <p>
-                                    Contract address:{" "}
-                                    {import.meta.env.VITE_CONTRACT_ADDRESS}
-                                </p>
+                                <p>Contract address: {contractAddress}</p>
                                 <p className="mt-1">
                                     © 2023 LegalChain. All rights reserved.
                                 </p>

@@ -6,7 +6,7 @@
   "scripts": {
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:hardhat": "pnpm --filter hardhat dev",
-    "deploy:hardhat": "cd packages/hardhat && pnpm run deploy && cd ../..",
+    "deploy:hardhat": "./deploy.sh",
     "build": "pnpm --filter \"*\" build",
     "lint": "pnpm --filter \"*\" lint",
     "test": "pnpm --filter \"*\" test"

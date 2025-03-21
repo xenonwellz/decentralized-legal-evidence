@@ -6,7 +6,7 @@
     "dev": "hardhat node",
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy": "npx hardhat run scripts/deploy.ts && cp -r artifacts ../frontend/src/artifacts",
+    "deploy": "npx hardhat run scripts/deploy.ts --network localhost",
     "lint": "eslint ."
   },
   "dependencies": {

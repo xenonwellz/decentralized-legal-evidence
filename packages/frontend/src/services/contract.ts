@@ -7,11 +7,15 @@ import {
 } from "viem";
 import { hardhat } from "viem/chains";
 import LegalEvidenceArtifact from "@/artifacts/contracts/LegalEvidence.sol/LegalEvidence.json";
+import DeployedAddresses from "@/artifacts/deployed_addresses.json";
 
 const abi = LegalEvidenceArtifact.abi;
 
 // Contract and network configuration
-const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
+export const contractAddress = DeployedAddresses[
+    "LegalEvidenceModule#LegalEvidence"
+] as `0x${string}`;
+
 const rpcUrl = import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:8545";
 
 // Define deployment chain - use hardhat as default
